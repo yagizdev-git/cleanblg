@@ -2,6 +2,7 @@
 const express = require('express');
 const mongoose = require('mongoose');
 const ejs = require('ejs');
+require('dotenv').config();
 const methodOverride = require('method-override');
 const postControllers = require('./controllers/postControllers');
 const pageControllers = require('./controllers/pageControllers');
@@ -10,7 +11,16 @@ const pageControllers = require('./controllers/pageControllers');
 const app = express();
 
 // Connecting to DB
-mongoose.connect('mongodb://localhost/cleanblog-test-db');
+const connectDB = async () => {
+  try {
+    const uri = process.env.MONGODB_URI;
+    await mongoose.connect(uri);
+    console.log('Connected to DB succesfully!');
+  } catch (error) {
+    console.log('Failed to connect DB ' + error);
+  }
+}
+connectDB();
 
 // Template Engine
 app.set('view engine', 'ejs');
@@ -36,7 +46,7 @@ app.put('/posts/:id', postControllers.editPost);
 app.delete('/posts/:id', postControllers.deletePost);
 
 // Starting port
-const port = 3000;
+const port = process.env.PORT || 8080;
 app.listen(port, () => {
   console.log(`Sunucu port ${port}'de çalışmaya başladı...`);
 });
